@@ -65,10 +65,10 @@
 
 name: Release & Publish (OBS + COPR)
 
+# In this fork the tag trigger is disabled: OBS, COPR and AUR publishing
+# need the upstream maintainer's accounts and secrets. Tags here build
+# the Flatpak instead (flatpak.yml).
 on:
-  push:
-    tags:
-      - "v*"
   workflow_dispatch:
     inputs:
       tag:

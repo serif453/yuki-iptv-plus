@@ -15,6 +15,12 @@ Community-maintained continuation of the original [liya/yuki-iptv](https://codeb
 [![Total Downloads](https://img.shields.io/github/downloads/itachi-re/yuki-iptv/total)](https://github.com/itachi-re/yuki-iptv/releases)
 </div>
 
+> **yuki-iptv plus** — this repository ([serif453/yuki-iptv-plus](https://github.com/serif453/yuki-iptv-plus))
+> is based on [itachi-re/yuki-iptv](https://github.com/itachi-re/yuki-iptv) and adds
+> **recording while watching over a single connection** (no second connection to
+> the provider) and a **Flatpak** package. The rest of this README describes the
+> upstream project; its distro packages are published by itachi-re.
+
 ---
 
 ## ⚠️ Project Status
@@ -145,6 +151,23 @@ makepkg -si
 ```
 
 **Update (after a new release):** your AUR helper's normal update flow (`yay -Syu`, `paru -Syu`, etc.) will pick it up, or repeat the manual steps above.
+
+---
+
+### 📦 Flatpak (yuki-iptv plus, any distro)
+
+Download `yuki-iptv-plus.flatpak` from
+[Releases](https://github.com/serif453/yuki-iptv-plus/releases), then:
+
+```bash
+flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install --user ./yuki-iptv-plus.flatpak
+flatpak run io.github.serif453.YukiIptvPlus
+```
+
+Settings live in `~/.var/app/io.github.serif453.YukiIptvPlus/`. To keep
+recordings somewhere easy to find, choose your Videos or Downloads folder as
+the save folder in the settings.
 
 ---
 

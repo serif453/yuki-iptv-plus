@@ -9,3 +9,9 @@ debian/yuki-iptv
 debian/*debhelper*
 debian/files
 debian/yuki-iptv.substvars
+
+# Flatpak build output
+.flatpak-builder
+flatpak_app
+repo
+*.flatpak
