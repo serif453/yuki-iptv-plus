@@ -87,6 +87,7 @@ from yuki_iptv.record import (
     is_ffmpeg_recording,
     terminate_record_process,
 )
+from yuki_iptv.record_mpv import MpvRecorder
 from yuki_iptv.catchup import (
     get_catchup_url,
     format_catchup_array,
@@ -183,12 +184,17 @@ if __name__ == "__main__":
             except Exception:
                 pass
             try:
-                stop_record()
+                if YukiData.mpv_recorder:
+                    YukiData.mpv_recorder.stop()
+            except Exception:
+                pass
+            try:
+                stop_record(wait=True)
             except Exception:
                 pass
             try:
                 for rec_1 in sch_recordings:
-                    do_stop_record(rec_1)
+                    do_stop_record(rec_1, wait=True)
             except Exception:
                 pass
             try:
@@ -936,11 +942,11 @@ if __name__ == "__main__":
                 ch_name,
             ]
 
-        def do_stop_record(name2):
+        def do_stop_record(name2, wait=False):
             if name2 in sch_recordings:
                 ffmpeg_process = sch_recordings[name2][0]
                 if ffmpeg_process:
-                    terminate_record_process(ffmpeg_process)
+                    terminate_record_process(ffmpeg_process, wait)
 
         def record_post_action_after():
             logger.info("Record via scheduler ended, executing post-action...")
@@ -1254,6 +1260,9 @@ if __name__ == "__main__":
             return useragent_ref, referer_ref
 
         def mpv_override_play(arg_override_play, channel_name1=""):
+            if YukiData.mpv_recorder:
+                # Close the record file before loading, see MpvRecorder
+                YukiData.mpv_recorder.before_load(arg_override_play)
             on_before_play()
             useragent_ref, referer_ref = get_ua_ref_for_channel(channel_name1)
             YukiData.player.user_agent = useragent_ref
@@ -4144,19 +4153,44 @@ if __name__ == "__main__":
                         )
                     )
                 YukiData.record_file = out_file
-                record(
-                    url3,
-                    out_file,
-                    orig_channel_name,
-                    f"Referer: {YukiData.settings['referer']}",
-                    get_ua_ref_for_channel,
-                )
+                # Record the playing channel through the player's own
+                # connection (no second connection to the provider)
+                if (
+                    YukiData.mpv_recorder
+                    and url3 == YukiData.playing_url
+                    and YukiData.mpv_recorder.start(out_file, url3)
+                ):
+                    logger.info("Recording playing channel via mpv stream-record")
+                else:
+                    record(
+                        url3,
+                        out_file,
+                        orig_channel_name,
+                        f"Referer: {YukiData.settings['referer']}",
+                        get_ua_ref_for_channel,
+                    )
             else:
-                YukiData.is_recording = False
-                YukiData.recording_time = 0
-                stop_record()
-                YukiGUI.lbl2.setText("")
-                YukiGUI.lbl2.hide()
+                if YukiData.mpv_recorder and YukiData.mpv_recorder.is_recording:
+                    YukiData.mpv_recorder.stop()
+                else:
+                    stop_record()
+                reset_record_ui()
+
+        def reset_record_ui():
+            YukiData.is_recording = False
+            YukiData.recording_time = 0
+            YukiGUI.lbl2.setText("")
+            YukiGUI.lbl2.hide()
+
+        def mpv_record_stopped():
+            # Recording ended by itself (channel changed / stalled)
+            reset_record_ui()
+            YukiData.time_stop = time.time() + 3
+            YukiData.state.show()
+            YukiData.state.setTextYuki(_("Recording stopped"))
+
+        def mpv_record_file_changed(new_file):
+            YukiData.record_file = new_file
 
         def do_record():
             if YukiData.playing_channel:
@@ -4384,6 +4418,8 @@ if __name__ == "__main__":
                         mpv_stop()
 
         def file_loaded_callback():
+            if YukiData.mpv_recorder:
+                YukiData.mpv_recorder.on_file_loaded()
             if YukiData.playing_channel:
                 redraw_menubar()
 
@@ -4801,9 +4837,11 @@ if __name__ == "__main__":
                             ),
                             "Position": GLib.Variant(
                                 "x",
-                                YukiData.player.time_pos * 1000000
-                                if YukiData.player.time_pos
-                                else 0,
+                                (
+                                    YukiData.player.time_pos * 1000000
+                                    if YukiData.player.time_pos
+                                    else 0
+                                ),
                             ),
                             "MinimumRate": GLib.Variant("d", 0.01),
                             "MaximumRate": GLib.Variant("d", 5.0),
@@ -5279,9 +5317,11 @@ if __name__ == "__main__":
                     pass
                 save_player_tracks()
                 saveLastChannel()
-                stop_record()
+                if YukiData.mpv_recorder:
+                    YukiData.mpv_recorder.stop()
+                stop_record(wait=True)
                 for rec_1 in sch_recordings:
-                    do_stop_record(rec_1)
+                    do_stop_record(rec_1, wait=True)
                 if YukiData.mpris_loop:
                     YukiData.mpris_running = False
                     YukiData.mpris_loop.quit()
@@ -6102,6 +6142,12 @@ if __name__ == "__main__":
         if YukiData.settings["m3u"] and m3u_exists:
             show_window(win)
             init_mpv_player()
+            YukiData.mpv_recorder = MpvRecorder(
+                YukiData.player,
+                show_exception,
+                on_stopped=mpv_record_stopped,
+                on_file_changed=mpv_record_file_changed,
+            )
             try:
                 combobox_index1 = read_option("comboboxindex")
                 if combobox_index1:

@@ -31,6 +31,9 @@ from yuki_iptv.settings import parse_settings
 
 logger = logging.getLogger(__name__)
 
+# Time to wait for ffmpeg to finish gracefully after sending "q" (ms)
+GRACEFUL_STOP_TIMEOUT = 5000
+
 # ffmpeg exit code for AVERROR_OPTION_NOT_FOUND ("Option ... not found.")
 FFMPEG_EXIT_OPTION_NOT_FOUND = 8
 
@@ -92,7 +95,9 @@ def is_ffmpeg_recording():
 
 def _tail(data):
     try:
-        return "\n".join(bytes(data).decode("utf-8").split("\n")[-15:])
+        return "\n".join(
+            bytes(data).decode("utf-8", errors="replace").split("\n")[-15:]
+        )
     except Exception:
         return str(data)
 
@@ -122,14 +127,33 @@ def exit_handler(process, exit_code, _exit_status):
         process.start("ffmpeg", retry_arr)
         return
 
-    logger.warning("ffmpeg process crashed")
+    crashed = _exit_status != QtCore.QProcess.ExitStatus.NormalExit
+    if not crashed and exit_code == 0:
+        logger.info("ffmpeg finished")
+        return
+
+    # Non-zero exit without a crash: connection error, HTTP 403/404,
+    # invalid URL etc. - reported too
+    logger.warning(f"ffmpeg failed (exit code {exit_code}, crashed: {crashed})")
     if YukiData.show_record_exception:
         YukiData.show_record_exception(
-            _("ffmpeg crashed!") + "\n"
+            (_("ffmpeg crashed!") if crashed else _("Recording failed!")) + "\n"
             "" + _("exit code:") + " " + str(exit_code) + ""
             "\nstdout:\n" + _tail(standard_output) + ""
             "\nstderr:\n" + _tail(standard_error)
         )
+
+
+def error_handler(error):
+    if error == QtCore.QProcess.ProcessError.FailedToStart:
+        # "finished" is not emitted in this case
+        logger.error("ffmpeg failed to start")
+        if YukiData.show_record_exception:
+            YukiData.show_record_exception(
+                _("ffmpeg could not be started!")
+                + "\n"
+                + _("Make sure ffmpeg is installed and available in PATH.")
+            )
 
 
 def _start_ffmpeg(arr, retry_arr=None):
@@ -138,6 +162,7 @@ def _start_ffmpeg(arr, retry_arr=None):
     proc.finished.connect(
         lambda exit_code, exit_status: exit_handler(proc, exit_code, exit_status)
     )
+    proc.errorOccurred.connect(lambda error: error_handler(error))
     proc.start("ffmpeg", arr)
     return proc
 
@@ -178,13 +203,22 @@ def record(
             "-headers",
             http_referer + "\r\n" + origin_add,
             *(["-extension_picky", "0"] if use_picky else []),
-            "-reconnect", "1",
-            "-reconnect_streamed", "1",
-            "-reconnect_on_network_error", "1",
-            "-reconnect_on_http_error", "503",
-            "-reconnect_delay_max", "5",
+            "-reconnect",
+            "1",
+            "-reconnect_streamed",
+            "1",
+            "-reconnect_on_network_error",
+            "1",
+            "-reconnect_on_http_error",
+            "503",
+            "-reconnect_delay_max",
+            "5",
             "-i",
             input_url,
+            # Select all streams first, otherwise the negative maps below
+            # have no effect and only one audio track is recorded
+            "-map",
+            "0",
             "-map",
             "-0:s?",
             "-sn",
@@ -208,6 +242,10 @@ def record(
             "warning",
             "-i",
             input_url,
+            # Select all streams first, otherwise the negative maps below
+            # have no effect and only one audio track is recorded
+            "-map",
+            "0",
             "-map",
             "-0:s?",
             "-sn",
@@ -227,14 +265,39 @@ def record(
         return _start_ffmpeg(arr, retry_arr)
 
 
-def terminate_record_process(proc):
+def terminate_record_process(proc, wait=False):
+    """Stops ffmpeg gracefully so the output file is finalized.
+
+    "q" is sent to ffmpeg's stdin first; the process is killed only if it
+    does not exit in time. wait=True blocks (used on application exit,
+    when timers would never fire).
+    """
     proc._yuki_killed = True
-    proc.kill()
+    if proc.processId() == 0:
+        return
+    try:
+        proc.write(b"q")
+        proc.closeWriteChannel()
+    except Exception:
+        logger.exception("Failed to send 'q' to ffmpeg")
+
+    if wait:
+        if not proc.waitForFinished(GRACEFUL_STOP_TIMEOUT):
+            proc.kill()
+            proc.waitForFinished(GRACEFUL_STOP_TIMEOUT)
+        return
+
+    def force_stop():
+        if proc.processId() != 0:
+            logger.warning("ffmpeg did not exit in time, killing")
+            proc.kill()
+
+    QtCore.QTimer.singleShot(GRACEFUL_STOP_TIMEOUT, force_stop)
 
 
-def stop_record():
+def stop_record(wait=False):
     if YukiData.ffmpeg_proc:
-        terminate_record_process(YukiData.ffmpeg_proc)
+        terminate_record_process(YukiData.ffmpeg_proc, wait)
 
 
 def init_record(show_exception, ffmpeg_processes):

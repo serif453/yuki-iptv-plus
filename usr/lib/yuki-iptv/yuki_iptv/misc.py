@@ -130,6 +130,7 @@ class YukiData:
     previous_text = ""
     prog_match_arr = None
     record_file = None
+    mpv_recorder = None
     recording_time = 0
     recViaScheduler = False
     rewindWidgetVisible = False
