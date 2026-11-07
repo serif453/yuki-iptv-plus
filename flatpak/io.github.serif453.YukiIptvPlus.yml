@@ -110,6 +110,24 @@ modules:
           - https://ftp.x.org/pub/individual/lib/libXpresent-1.0.1.tar.xz
         sha256: b964df9e5a066daa5e08d2dc82692c57ca27d00b8cc257e8e960c9f1cf26231b
 
+  # Lua for mpv: the on-screen controller (osc) used by yuki-iptv and the
+  # ytdl hook used for YouTube links are Lua scripts built into mpv
+  - name: luajit
+    buildsystem: simple
+    build-commands:
+      # LuaJIT takes its version from git; pin the commit time instead
+      - echo 1793383622 > .relver
+      - make -j${FLATPAK_BUILDER_N_JOBS} PREFIX=${FLATPAK_DEST}
+      - make install PREFIX=${FLATPAK_DEST}
+    cleanup:
+      - /bin
+      - /share/man
+    sources:
+      - type: git
+        url: https://github.com/LuaJIT/LuaJIT.git
+        branch: v2.1
+        commit: ea9eb7edb5eac4a9d175d74523db34fac0fa5180
+
   # libmpv only, the player itself is yuki-iptv
   - name: mpv
     buildsystem: meson
@@ -120,7 +138,7 @@ modules:
       # instead of silently producing an audio-only libmpv
       - -Dx11=enabled
       - -Degl-x11=enabled
-      - -Dlua=disabled
+      - -Dlua=luajit
       - -Djavascript=disabled
       - -Dmanpage-build=disabled
       - -Dhtml-build=disabled
@@ -149,6 +167,7 @@ modules:
         'chardet>=5,<6'
         'Pillow>=10,<13'
         'PyGObject==3.50.0'
+        'yt-dlp'
 
   - name: yuki-iptv
     buildsystem: simple
