@@ -65,7 +65,7 @@ Please include:
 
 ## Reporting security issues
 
-Please don't open a public issue for a security vulnerability (anything that could leak credentials, execute arbitrary code from a malicious playlist, etc.). Email **xanbenson99@gmail.com** directly instead, so it can be fixed before details go public.
+Please don't open a public issue for a security vulnerability (anything that could leak credentials, execute arbitrary code from a malicious playlist, etc.). Report it privately instead, so it can be fixed before details go public: open the repository's **Security** tab and choose **Report a vulnerability**. See [`SECURITY.md`](./SECURITY.md) for details.
 
 ## Translations
 
