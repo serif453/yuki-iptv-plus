@@ -119,7 +119,7 @@ preserve as much of that history as possible.
 | **VOD / Series** | Group-based movie/series organisation |
 | **UI** | Channel search, favorites, groups, hide channels, tech info overlay |
 
-> ⚠️ **Disclaimer:** yuki-iptv does not provide, host, or bundle any content, playlists, or TV channels. It is a player only. Channels shown in screenshots are for demonstration purposes only.
+> ⚠️ **Disclaimer:** yuki-iptv does not provide, host, or bundle any content, playlists, or TV channels. It is a player only. Channels shown in screenshots are for demonstration purposes only. See the Legal section below and [`DISCLAIMER.md`](./DISCLAIMER.md).
 
 ---
 
@@ -228,7 +228,36 @@ Please include:
 - Steps to reproduce the issue
 - Any relevant log output or error messages
 
-→ [Open an issue](https://github.com/itachi-re/yuki-iptv/issues)
+→ [Open an issue](https://github.com/serif453/yuki-iptv-plus/issues)
+
+---
+
+## ⚖️ Legal
+
+> This is a summary. The full text is in [`DISCLAIMER.md`](./DISCLAIMER.md).
+> It is not legal advice, and laws differ between countries.
+
+- **Player only.** yuki-iptv plus does not provide, host, sell or bundle any
+  channels, streams, playlists or EPG data. No playlist is included.
+- **Your sources, your responsibility.** Use only content you have the legal
+  right to access. Do not use the software with pirated or unauthorized
+  streams.
+- **Recording is for personal use.** Recording features copy the stream you are
+  already watching to your own device. Do not share or sell recordings unless
+  you hold the rights, and check the rules in your country and your provider's
+  terms.
+- **No circumvention.** The software does not remove or bypass DRM,
+  encryption, paywalls or geo-restrictions, and such contributions are not
+  accepted.
+- **No affiliation.** This is an independent, unofficial fork. It is not
+  endorsed by any broadcaster, provider, or the authors of the original
+  yuki-iptv. All trademarks and logos belong to their owners.
+- **No warranty.** Provided "as is" under GPL-3.0-or-later, without warranty
+  of any kind.
+- **Privacy.** The source code contains no telemetry or analytics. The app only
+  connects to the playlist, EPG and stream addresses you configure.
+- **Copyright complaints.** This repository hosts source code only. Notices
+  are handled as described in [`DISCLAIMER.md`](./DISCLAIMER.md#8-copyright-complaints-and-takedown-requests).
 
 ---
 

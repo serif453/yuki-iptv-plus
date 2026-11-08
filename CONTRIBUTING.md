@@ -41,6 +41,19 @@ Heads up: the upstream project removed its automated test suite early on, so the
 4. Open a pull request describing what changed, why, and how you tested it.
 5. Be patient but persistent with review — this is a small, volunteer-run project, so turnaround may vary.
 
+## Content and legal rules
+
+This project is a player only. To keep it legal and safe for everyone, please follow these rules in issues, pull requests, discussions, screenshots and code. See also [`DISCLAIMER.md`](./DISCLAIMER.md).
+
+- **No pirated content.** Do not post, link to, or ask for pirated playlists, IPTV subscriptions, streams, or "free channel" lists. Such comments are removed, and repeat offenders may be blocked.
+- **No bundled content.** Do not add default playlists, channel lists, stream URLs, EPG sources that serve unlicensed content, or provider-specific presets. Use clearly legal sample sources (your own media, openly licensed or free-to-air streams) in tests and examples.
+- **No circumvention.** Do not submit features that remove or bypass DRM, encryption, paywalls, account or connection limits, or geographic restrictions. Such pull requests will be closed.
+- **No trademarks or logos.** Do not add real channel logos, broadcaster names, or provider branding to the code, documentation or screenshots. Blur or replace them in screenshots.
+- **Protect credentials.** Remove playlist URLs, Xtream credentials and tokens from logs, issues and screenshots before posting.
+- **No tracking.** Do not add telemetry, analytics or any data collection without a prior discussion and clear opt-in.
+- **Recording stays personal.** Recording features must work on the stream the user is already playing and must not upload or share recordings automatically.
+- **Third-party code.** Only include code and assets whose license is compatible with GPL-3.0-or-later, and credit the source.
+
 ## Reporting bugs
 
 Please include:
