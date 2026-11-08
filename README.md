@@ -5,7 +5,6 @@
 **IPTV player with EPG support**
 Community-maintained continuation of the original [liya/yuki-iptv](https://codeberg.org/liya/yuki-iptv)
 
-[![Build Status](https://build.opensuse.org/projects/home:itachi_re/packages/yuki-iptv/badge.svg?type=default)](https://build.opensuse.org/package/show/home:itachi_re/yuki-iptv)
 [![GitHub Release](https://img.shields.io/github/v/release/itachi-re/yuki-iptv)](https://github.com/itachi-re/yuki-iptv/releases)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./COPYING)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey?logo=linux)](https://github.com/itachi-re/yuki-iptv)
@@ -125,94 +124,11 @@ preserve as much of that history as possible.
 ---
 
 ## 📦 Installation
-[![Packaging status](https://repology.org/badge/vertical-allrepos/yuki-iptv.svg)](https://repology.org/project/yuki-iptv/versions)
 
-### 🦎 openSUSE Tumbleweed (OBS — Recommended)
+### 📦 Flatpak (any distro)
 
-Packages are built and published via the [Open Build Service](https://build.opensuse.org/package/show/home:itachi_re/yuki-iptv).
-
-> **🧪 Note:** OBS packages are currently in the testing phase. The build may occasionally be broken or behind. Check the build badge at the top of this page before installing.
-
-**One-time repository setup:**
-
-```bash
-sudo zypper addrepo \
-  https://download.opensuse.org/repositories/home:/itachi_re/openSUSE_Tumbleweed/home:itachi_re.repo
-sudo zypper refresh
-```
-
-**Install:**
-
-```bash
-sudo zypper install yuki-iptv
-```
-
-**Update (after a new release):**
-
-```bash
-sudo zypper refresh && sudo zypper update yuki-iptv
-```
-
-**Remove repository when no longer needed:**
-
-```bash
-sudo zypper removerepo home_itachi_re
-```
-
-Alternatively, install via YaST → Software Repositories → Add → Community Repositories, and search for `home:itachi_re`.
-
----
-
-### 🎩 Fedora (COPR)
-
-Packages are built and published via [Fedora COPR](https://copr.fedorainfracloud.org/coprs/itachi-re/yuki-iptv/).
-
-> **🧪 Note:** COPR packages are currently in the testing phase and currently target `fedora-44-x86_64` and `fedora-43-x86_64`. If your release isn't covered yet, open an issue.
-
-**One-time repository setup + install:**
-
-```bash
-sudo dnf copr enable itachi-re/yuki-iptv
-sudo dnf install yuki-iptv
-```
-
-**Update (after a new release):**
-
-```bash
-sudo dnf update yuki-iptv
-```
-
-**Remove repository when no longer needed:**
-
-```bash
-sudo dnf copr disable itachi-re/yuki-iptv
-```
-
----
-
-### 🏹 Arch Linux (AUR)
-
-yuki-iptv is available on the [AUR](https://aur.archlinux.org/packages/yuki-iptv) and builds from source using your own machine, same as any other AUR package.
-
-**Using an AUR helper (e.g. `yay` or `paru`):**
-
-```bash
-yay -S yuki-iptv
-```
-
-**Manually, without a helper:**
-
-```bash
-git clone https://aur.archlinux.org/yuki-iptv.git
-cd yuki-iptv
-makepkg -si
-```
-
-**Update (after a new release):** your AUR helper's normal update flow (`yay -Syu`, `paru -Syu`, etc.) will pick it up, or repeat the manual steps above.
-
----
-
-### 📦 Flatpak (yuki-iptv plus, any distro)
+yuki-iptv plus is currently distributed as a **Flatpak**, which works on any
+Linux distribution.
 
 Download `yuki-iptv-plus.flatpak` from
 [Releases](https://github.com/serif453/yuki-iptv-plus/releases), then:
@@ -232,8 +148,8 @@ the save folder in the settings.
 ### 🔧 Running from Source
 
 ```bash
-git clone https://github.com/itachi-re/yuki-iptv.git
-cd yuki-iptv
+git clone https://github.com/serif453/yuki-iptv-plus.git
+cd yuki-iptv-plus
 # Install dependencies listed in debian/control first
 # At minimum: Python 3, PyQt, mpv
 python3 usr/lib/yuki-iptv/yuki-iptv.py
@@ -245,13 +161,17 @@ If the entry point has moved, look under `usr/lib/yuki-iptv/` for the current ma
 
 ---
 
-### 🗓️ Other Platforms — Coming Eventually
+### 🗓️ Other Distributions and Platforms — Coming Over Time
 
-> **🌍 Multiplatform support is on the roadmap.** The long-term goal is to support Windows and macOS in addition to Linux, but that is a significant undertaking and is not close to landing yet.
+> **🌍 More packages are planned.** This fork started with Flatpak, so that is
+> the only officially supported install method for now. Installation guides
+> for other distributions (native packages for openSUSE, Fedora, Arch, Debian
+> and Ubuntu) will be added here as each package becomes available.
+> Windows and macOS are long-term goals.
 
-On the Linux side, a Debian/Ubuntu `.deb` is also **planned but not yet available**. openSUSE, Fedora, and Arch are covered above.
-
-In the meantime, [running from source](#-running-from-source) works on any Linux distro with Python 3, PyQt, and `mpv` available. If you'd like to contribute packaging or platform support, pull requests are very welcome.
+In the meantime, [running from source](#-running-from-source) works on any
+Linux distro with Python 3, PyQt, and `mpv` available. If you'd like to
+contribute packaging or platform support, pull requests are very welcome.
 
 ---
 
@@ -304,7 +224,7 @@ Since this fork is in early testing, **bug reports are especially valuable right
 
 Please include:
 - Your distribution and version (e.g. openSUSE Tumbleweed, snapshot date)
-- How you installed (OBS package / COPR / AUR / from source)
+- How you installed (Flatpak / from source)
 - Steps to reproduce the issue
 - Any relevant log output or error messages
 
