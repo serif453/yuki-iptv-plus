@@ -23,6 +23,64 @@ Community-maintained continuation of the original [liya/yuki-iptv](https://codeb
 
 ---
 
+## 🎯 Our Goals
+
+yuki-iptv plus exists to keep a great Linux IPTV player alive and to make it
+better at the things viewers actually need.
+
+- **Record without a second connection.** Most IPTV providers allow only one
+  stream per account. Recording what you are watching should never cost you a
+  second connection, so we record from the stream you are already playing.
+- **Reliable recordings.** Recordings should survive reconnects, notice when
+  nothing is being written, and never silently overwrite earlier footage.
+- **Works on any distro.** A Flatpak package means the same app on Fedora,
+  Ubuntu, Arch, openSUSE and everything in between, with no building from
+  source.
+- **Stay open and trustworthy.** Free software under GPL-3.0-or-later, a
+  transparent history traced back to the original project, and releases
+  published directly from this repository.
+- **Respect the upstream project.** This is a community continuation, not a
+  rebrand. Credit stays with the original authors, and fixes that belong
+  upstream are shared back.
+- **Player only, never content.** yuki-iptv does not provide, host, or bundle
+  any channels or playlists. You bring your own legal sources.
+
+---
+
+## ⏺️ Record While Watching
+
+Record the channel you are watching, **over the same single connection**.
+
+When you press record, yuki-iptv plus saves the packets that are already
+arriving for playback straight to a file. It does not open a second connection
+to your provider and does not re-encode the video, so:
+
+- ✅ **No extra connection:** works with accounts limited to one stream.
+- ✅ **No quality loss:** the stream is copied as it is, without re-encoding,
+  with very low CPU usage.
+- ✅ **Watch and record at the same time:** playback is not interrupted.
+- ✅ **Survives reconnects:** if the stream drops and reloads, recording
+  continues in a new `_part2`, `_part3`, … file instead of overwriting the
+  previous one.
+- ✅ **Safe by design:** switching to another channel ends the recording, and
+  you are warned if no data has been written for about 20 seconds.
+
+**How to use it**
+
+1. Start playing a channel.
+2. Press the **Record** button, or the `R` hotkey (configurable in the
+   keybinds settings).
+3. Press it again to stop. Your file is finalized and ready to play.
+
+**Tips**
+
+- Use the `.ts` or `.mkv` container for recordings. Other formats are not
+  recommended for stream copying.
+- With the Flatpak package, choose your Videos or Downloads folder as the save
+  folder in the settings so recordings are easy to find.
+
+---
+
 ## ⚠️ Project Status
 
 > **🧪 Early Testing Phase — Expect Bugs**
